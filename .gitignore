@@ -1,0 +1,24 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+
+# Crash & profiler
+sysinfo.txt
+*.stacktrace
+
+# Rider / VS / VSCode / IDE
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.user
+
+# OS junk
+.DS_Store
+Thumbs.db
