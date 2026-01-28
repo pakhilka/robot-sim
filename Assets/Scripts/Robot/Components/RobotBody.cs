@@ -61,6 +61,16 @@ namespace RobotSim.Components
             {
                 _maxSpeed = 0f;
             }
+
+            if (_motorAcceleration < 0f)
+            {
+                _motorAcceleration = 0f;
+            }
+
+            if (_motorBrakingForce < 0f)
+            {
+                _motorBrakingForce = 0f;
+            }
         }
     }
 }

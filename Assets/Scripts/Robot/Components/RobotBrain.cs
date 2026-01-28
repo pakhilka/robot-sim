@@ -64,14 +64,7 @@ namespace RobotSim.Components
             MotorCommandDTO command = _robotController.Tick(sensorData);
 
             // Исполняем команду на теле
-            if (command != null)
-            {
-                _body.SetMotors(command.left, command.right);
-            }
-            else
-            {
-                _body.SetMotors(0f, 0f);
-            }
+            _body.SetMotors(command.left, command.right);
         }
 
         private void Reset()

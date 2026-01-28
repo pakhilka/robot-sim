@@ -281,11 +281,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 596659337}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32ffe91f727e74b8b96113db9da1b78a, type: 3}
+  m_Script: {fileID: 11500000, guid: b7cb8af51acc64940af9cbbfa47b7f9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxDistance: 20
-  obstacleMask:
+  _sensorId: LaserDistance
+  _maxDistance: 100
+  _obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
 --- !u!1 &749917737
@@ -769,6 +770,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 417704, guid: 68840c673a0b18e41a044ed077548d55, type: 3}
       insertIndex: -1
       addedObject: {fileID: 596659338}
+    - targetCorrespondingSourceObject: {fileID: 417704, guid: 68840c673a0b18e41a044ed077548d55, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2033840105}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 118600, guid: 68840c673a0b18e41a044ed077548d55, type: 3}
       insertIndex: -1
@@ -823,14 +827,61 @@ MonoBehaviour:
   m_GameObject: {fileID: 2023770810}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a41eb7dc455c41fd8f297ae5007ff02, type: 3}
+  m_Script: {fileID: 11500000, guid: 67c602b49fe8f4ed3aa4c8eccfdcd5cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 10
-  acceleration: 5
-  brakingForce: 40
-  frontSensor: {fileID: 596659339}
-  stopDistance: 15
+  _maxSpeed: 10
+  _motorAcceleration: 5
+  _motorBrakingForce: 10
+--- !u!1 &2033840104
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2033840105}
+  - component: {fileID: 2033840106}
+  m_Layer: 0
+  m_Name: Brain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2033840105
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2033840104}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2023770811}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2033840106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2033840104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31b4c1d36b31243f5bd2c9e886a5c4e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _body: {fileID: 2023770816}
+  _laserSensor: {fileID: 596659339}
+  _brainType: 1
+  _tcpHost: 127.0.0.1
+  _tcpPort: 9999
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
