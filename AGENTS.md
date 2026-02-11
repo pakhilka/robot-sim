@@ -1,94 +1,82 @@
-<!-- OPENSPEC:START -->
+# OpenSpec + Beads Workflow for RobotSim
 
-# OpenSpec Instructions
+We operate in a cycle: OpenSpec (What) → Beads (Plan) → Code (Implementation).
 
-These instructions are for AI assistants working in this project.
+## 0) Project Architecture (non-negotiable unless documented)
+RobotSim uses Clean Architecture / Hexagonal (Ports & Adapters) adapted for Unity:
 
-Always open `openspec/AGENTS.md` when the request:
-- Mentions planning/proposals/spec/change/architecture
-- Introduces new features, breaking changes, or major performance/security work
-- Feels ambiguous and you need the authoritative spec before coding
+- Unity Adapters (MonoBehaviour): touch Unity API only (physics, raycasts, lifecycle).
+- Core (Pure C#): brains, controllers, services, decision logic. Avoid UnityEngine dependencies where possible.
+- Ports (Interfaces): `IRobotBrain`, `ISensor`, `ITcpClientService`, etc.
+- Adapters (Implementations): `WokwiTcpBrain`, `TcpClientService`, sensors, bodies, orchestrators.
 
-Use `openspec/AGENTS.md` to learn:
-- How to create and apply change proposals
-- Spec format and conventions
-- Project structure and guardrails
+### Tick Contract (FixedUpdate loop)
+Preferred flow:
+1) Collect sensor data
+2) Brain/controller decision
+3) Apply motor command via RobotBody
 
-Keep this managed block so `openspec update` can refresh the instructions.
+Rules:
+- The core tick must not block on I/O.
+- Unity API calls happen only in Unity adapters on the main thread.
 
-<!-- OPENSPEC:END -->
+## 1) Repository Structure Rules
+### Allowed modification zone (STRICT)
+- `Assets/Scripts/**` is the only area the agent may modify by default.
+- Everything else under `Assets/**` must not be changed without explicit permission.
 
-# RobotSim — Agent Operating Rules (Codex entrypoint)
+### Data placement (STRICT)
+All DTOs and result/data contracts must live under:
+- `Assets/Scripts/**/Data/**` (or follow existing `RobotSim.Data/**` namespaces)
 
-## Priorities
-- Focus: **features** (next month)
-- Bias: **70% quality/stability**, 30% speed
-- Work on **code only** (NO scene editing)
+Do not scatter DTOs across random folders.
 
-## Hard Guardrails (DO NOT VIOLATE)
-- **The agent may only modify project code under `Assets/Scripts/**` by default.**
-- **DO NOT modify**:
-  - `ProjectSettings/**`
-  - `Packages/**`
-  - `Assets/**/*.unity` (scenes)
-  - `Assets/**/Prefabs/**` (prefabs) unless explicitly allowed (default: no)
-  - Any other files under `Assets/**` that are **not** inside `Assets/Scripts/**` (art, settings, assets, input assets, etc.)
-- **No secrets/keys** in the repo or in chat. Never commit credentials. Use safe storage methods.
-- Before running any shell command (`git`, `dotnet`, tests, etc.) **ask for explicit confirmation**.
-- **Git commands require explicit permission** (including `git status`, `git add`, `git commit`, `git push`, `git pull`, `git rebase`, etc.).
+## 2) Guardrails (STRICT)
+Forbidden areas (default):
+- `ProjectSettings/**`
+- `Packages/**`
+- `Assets/**/*.unity` (scenes)
+- Prefabs and other binary/asset configs by default
 
+Secrets:
+- Never place credentials in code, docs, issues, specs, or chat.
 
-## Default response style
-1) Questions/Risks (if any)
-2) Contract/Spec (acceptance criteria, interfaces, DTOs impacted)
-3) Only after the explicit approval keyword: **"Go!"** → implementation plan + diffs
+## 3) OpenSpec Process (mandatory for all changes)
+Approval gate:
+- Do NOT proceed to implementation until the user explicitly says "Go!".
 
-## Workflow (OpenSpec → Beads → Code)
-- OpenSpec is **mandatory** for:
-  - new features
-  - architectural changes
-  - public API changes
-- **No quick-fix mode**: even small changes must have an OpenSpec change.
-- Beads is a **supporting tracker** (planning + execution), not the main communication tool.
+OpenSpec command execution (CLI):
+- OpenSpec is used via CLI in the terminal (not as chat slash-commands).
+- Do NOT invent command names or suggest PATH hacks.
+- If an OpenSpec command is unknown/missing, ask the human to run: `openspec --help` (human-run).
+- The agent must ask for explicit confirmation before running any terminal commands.
 
-## Git Branch Naming (required)
-- Features: `feature/<name>`
-- Bug fixes: `bugfix/<name>`
-- (Optional) Chores/infra: `chore/<name>`
+Beads generation fallback:
+- If there is no automated "to-beads", the agent MUST:
+  1) Read `openspec/changes/<change-id>/tasks.md`
+  2) Create a Beads epic referencing `openspec/changes/<change-id>/`
+  3) Create many small Beads tasks via `bd create`
+  4) Add dependencies via `bd dep add`
+  5) Execute via `bd ready`
 
-Naming rules:
-- Use lowercase and hyphens: `feature/tcp-reconnect`, `bugfix/motor-turning`
-- Keep it short and descriptive (2–5 words).
+## 4) Quality Gates (current)
+No automated tests yet.
+Before marking work "done":
+- compile with no Unity Console errors
+- human manual smoke run
 
-## Session Handoff (mandatory)
-At the end of each work session, provide:
-- What changed (files/modules)
-- What is done vs pending
-- How to verify locally (commands to run; user executes them)
-- Next steps / which `bd ready` task to pick next
+## 5) Git + Collaboration
+Branch naming (required):
+- `feature/<name>`
+- `bugfix/<name>`
+- optional `chore/<name>`
 
-## Landing the Plane (Session Completion)
+Command execution policy:
+- The agent may propose commands, but must ask for explicit confirmation before running any shell commands (including all git commands).
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
-
-**MANDATORY WORKFLOW:**
-
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   bd sync
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+## 6) Session Handoff (mandatory)
+At the end of each session:
+- summary of changes
+- pending tasks
+- verification steps (commands; user runs them)
+- next recommended `bd ready` task
