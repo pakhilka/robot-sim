@@ -22,3 +22,16 @@ sysinfo.txt
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Node (dev tooling, optional)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Optional: local env files (never commit secrets)
+.env
+.env.*
+
+wokwi-tcp.tar
