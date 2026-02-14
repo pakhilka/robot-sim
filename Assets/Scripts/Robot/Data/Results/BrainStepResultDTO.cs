@@ -1,6 +1,6 @@
-using RobotSim.Data.DTOs;
+using RobotSim.Robot.Data.DTOs;
 
-namespace RobotSim.Data.Results
+namespace RobotSim.Robot.Data.Results
 {
     /// <summary>
     /// DTO - Результат одного шага (Tick) мозга

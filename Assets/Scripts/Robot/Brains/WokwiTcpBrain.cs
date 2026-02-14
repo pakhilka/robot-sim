@@ -4,12 +4,12 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using UnityEngine;
-using RobotSim.Interfaces;
-using RobotSim.Data.DTOs;
-using RobotSim.Data.Results;
-using RobotSim.Services;
+using RobotSim.Robot.Interfaces;
+using RobotSim.Robot.Data.DTOs;
+using RobotSim.Robot.Data.Results;
+using RobotSim.Robot.Services;
 
-namespace RobotSim.Brains
+namespace RobotSim.Robot.Brains
 {
     /// <summary>
     /// TCP-клиент мозга для подключения к docker wokwi-tcp

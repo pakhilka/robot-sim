@@ -1,6 +1,6 @@
-using RobotSim.Data.DTOs;
+using RobotSim.Robot.Data.DTOs;
 
-namespace RobotSim.Brains
+namespace RobotSim.Robot.Brains
 {
     /// <summary>
     /// Конфигурация для мозгов робота

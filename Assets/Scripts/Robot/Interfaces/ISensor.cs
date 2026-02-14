@@ -1,4 +1,4 @@
-namespace RobotSim.Interfaces
+namespace RobotSim.Robot.Interfaces
 {
     /// <summary>
     /// Интерфейс для всех датчиков робота

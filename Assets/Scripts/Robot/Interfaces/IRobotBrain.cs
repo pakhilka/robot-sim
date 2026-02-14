@@ -1,7 +1,7 @@
-using RobotSim.Data.DTOs;
-using RobotSim.Data.Results;
+using RobotSim.Robot.Data.DTOs;
+using RobotSim.Robot.Data.Results;
 
-namespace RobotSim.Interfaces
+namespace RobotSim.Robot.Interfaces
 {
     /// <summary>
     /// Интерфейс для реализации "мозга" робота

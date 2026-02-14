@@ -1,7 +1,7 @@
 using UnityEngine;
-using RobotSim.Data.DTOs;
+using RobotSim.Robot.Data.DTOs;
 
-namespace RobotSim.Components
+namespace RobotSim.Robot.Components
 {
     /// <summary>
     /// MonoBehaviour компонент - физическое тело робота с моторами

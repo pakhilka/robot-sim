@@ -1,6 +1,6 @@
 using System;
 
-namespace RobotSim.Data.Results
+namespace RobotSim.Robot.Data.Results
 {
     /// <summary>
     /// DTO - Пути к артефактам попытки (относительно корня проекта)

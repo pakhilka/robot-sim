@@ -1,8 +1,8 @@
-using RobotSim.Interfaces;
-using RobotSim.Data.DTOs;
-using RobotSim.Data.Results;
+using RobotSim.Robot.Interfaces;
+using RobotSim.Robot.Data.DTOs;
+using RobotSim.Robot.Data.Results;
 
-namespace RobotSim.Brains
+namespace RobotSim.Robot.Brains
 {
     /// <summary>
     /// Простой мозг для отладки: стопится перед препятствием

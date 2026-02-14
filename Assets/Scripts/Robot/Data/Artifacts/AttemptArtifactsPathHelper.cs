@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace RobotSim.Data.Artifacts
+namespace RobotSim.Robot.Data.Artifacts
 {
     /// <summary>
     /// Helper - Формирование путей для артефактов попытки

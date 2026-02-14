@@ -1,7 +1,7 @@
-using RobotSim.Interfaces;
-using RobotSim.Services;
+using RobotSim.Robot.Interfaces;
+using RobotSim.Robot.Services;
 
-namespace RobotSim.Brains
+namespace RobotSim.Robot.Brains
 {
     /// <summary>
     /// Factory для создания экземпляров мозгов

@@ -1,7 +1,7 @@
-using RobotSim.Interfaces;
-using RobotSim.Data.DTOs;
+using RobotSim.Robot.Interfaces;
+using RobotSim.Robot.Data.DTOs;
 
-namespace RobotSim.Brains
+namespace RobotSim.Robot.Brains
 {
     /// <summary>
     /// Контроллер робота - оркестрирует работу мозга и тела

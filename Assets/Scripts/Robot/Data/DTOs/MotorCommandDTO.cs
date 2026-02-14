@@ -1,6 +1,6 @@
 using System;
 
-namespace RobotSim.Data.DTOs
+namespace RobotSim.Robot.Data.DTOs
 {
     /// <summary>
     /// DTO - Команда для моторов (левый и правый)

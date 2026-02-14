@@ -1,7 +1,7 @@
 using UnityEngine;
-using RobotSim.Interfaces;
+using RobotSim.Robot.Interfaces;
 
-namespace RobotSim.Components
+namespace RobotSim.Robot.Components
 {
     /// <summary>
     /// MonoBehaviour компонент - лазерный датчик расстояния

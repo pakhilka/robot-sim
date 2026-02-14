@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RobotSim.Data.DTOs
+namespace RobotSim.Robot.Data.DTOs
 {
     /// <summary>
     /// DTO - Данные от датчиков робота

@@ -1,4 +1,4 @@
-namespace RobotSim.Data.Results
+namespace RobotSim.Robot.Data.Results
 {
     /// <summary>
     /// Тип причины неуспешного прохождения уровня
