@@ -14,10 +14,10 @@
 
 ## 3. Attempt Control & Validation
 
-- [ ] 3.1 Implement `AttemptController` lifecycle (start/end, timing)
-- [ ] 3.2 Implement terminal conditions: finish reached, out-of-bounds, timeout, internal error
-- [ ] 3.3 Implement socket connection check before attempt start
-- [ ] 3.4 Ensure out-of-bounds check uses generated level bounds (camera-independent)
+- [x] 3.1 Implement `AttemptController` lifecycle (start/end, timing)
+- [x] 3.2 Implement terminal conditions: finish reached, out-of-bounds, timeout, internal error
+- [x] 3.3 Implement socket connection check before attempt start
+- [x] 3.4 Ensure out-of-bounds check uses generated level bounds (camera-independent)
 - [ ] 3.5 Integrate optional `GroundWithBounds` perimeter trigger as secondary out-of-bounds signal
 
 ## 4. Artifacts & Result Reporting
@@ -38,4 +38,4 @@
 - [ ] 6.1 Implement CLI JSON loading via `-request <path>`
 - [ ] 6.2 Orchestrate: load request → validate → generate level → run attempt → write artifacts
 - [ ] 6.3 Ensure human-wired `BootstrapRunner` entry point is documented in code comments
-- [ ] 6.4 Create per-request runtime attempt scene and unload it after attempt completion
+- [x] 6.4 Create per-request runtime attempt scene and unload it after attempt completion
