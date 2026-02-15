@@ -18,7 +18,7 @@
 - [x] 3.2 Implement terminal conditions: finish reached, out-of-bounds, timeout, internal error
 - [x] 3.3 Implement socket connection check before attempt start
 - [x] 3.4 Ensure out-of-bounds check uses generated level bounds (camera-independent)
-- [ ] 3.5 Integrate optional `GroundWithBounds` perimeter trigger as secondary out-of-bounds signal
+- [x] 3.5 Integrate optional `GroundWithBounds` perimeter trigger as secondary out-of-bounds signal
 
 ## 4. Artifacts & Result Reporting
 
@@ -39,3 +39,10 @@
 - [x] 6.2 Orchestrate: load request → validate → generate level → run attempt → write artifacts
 - [x] 6.3 Ensure human-wired `BootstrapRunner` entry point is documented in code comments
 - [x] 6.4 Create per-request runtime attempt scene and unload it after attempt completion
+
+## 7. Editor Local Validation Input
+
+- [x] 7.1 Add `BootstrapRunner` Inspector fields for local request input (`editorRequestPath`, `useEditorRequestFallback`)
+- [x] 7.2 Implement request source precedence: CLI `-request` → `editorRequestPath`
+- [x] 7.3 Add optional debug output folder in Inspector and write `last-request.json` + `last-result.json` for editor fallback runs
+- [x] 7.4 Add friendly validation errors for invalid editor fallback path/JSON and keep `failureType=invalid_input`

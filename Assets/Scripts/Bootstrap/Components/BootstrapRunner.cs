@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using Newtonsoft.Json;
 using RobotSim.Bootstrap.Attempts;
 using RobotSim.Bootstrap.Data;
 using RobotSim.Bootstrap.Interfaces;
@@ -26,6 +27,13 @@ namespace RobotSim.Bootstrap.Components
     /// </summary>
     public sealed class BootstrapRunner : MonoBehaviour
     {
+        private enum RequestSource
+        {
+            None = 0,
+            CommandLinePath,
+            EditorPath
+        }
+
         [Header("Scene Wiring")]
         [SerializeField]
         [Tooltip("MonoBehaviour that implements ILevelPrefabProvider (LevelPrefabProvider).")]
@@ -42,6 +50,19 @@ namespace RobotSim.Bootstrap.Components
         [SerializeField]
         [Tooltip("Auto-run orchestration on scene start (CLI mode).")]
         private bool _autoRunOnStart = true;
+
+        [Header("Editor Local Validation (Fallback)")]
+        [SerializeField]
+        [Tooltip("Enable local request fallback in Unity Editor when CLI '-request <path>' is not provided.")]
+        private bool _useEditorRequestFallback;
+
+        [SerializeField]
+        [Tooltip("Optional local request file path used only for editor fallback mode.")]
+        private string _editorRequestPath = string.Empty;
+
+        [SerializeField]
+        [Tooltip("Optional output folder for editor fallback debug files (last-request.json, last-result.json). Relative paths are resolved from project root.")]
+        private string _editorDebugOutputPath = string.Empty;
 
         private RuntimeAttemptSceneService _runtimeSceneService;
         private SocketConnectionProbe _socketConnectionProbe;
@@ -117,8 +138,9 @@ namespace RobotSim.Bootstrap.Components
             AttemptArtifactsLayout artifactsLayout = default;
             bool hasArtifactsLayout = false;
             LevelRunRequestDTO request = default;
+            RequestSource requestSource = RequestSource.None;
 
-            if (!TryLoadRequestFromCommandLine(out request, out string requestPath, out string loadError))
+            if (!TryLoadRequest(out request, out string requestPath, out string loadError, out requestSource))
             {
                 if (TryCreateAttemptArtifactsLayout("invalid-request", out artifactsLayout, out string layoutError))
                 {
@@ -130,14 +152,14 @@ namespace RobotSim.Bootstrap.Components
                         loadError,
                         0f,
                         artifactsDto);
-                    TryWriteResultJson(invalidInputResult, artifactsLayout, out _);
+                    TryWriteResultAndEditorDebug(invalidInputResult, artifactsLayout, requestSource, out _);
                 }
                 else
                 {
                     Debug.LogError($"[BootstrapRunner] Failed to create artifacts layout for invalid input: {layoutError}");
                 }
 
-                Debug.LogError($"[BootstrapRunner] CLI request load failed: {loadError}");
+                Debug.LogError($"[BootstrapRunner] Request load failed: {loadError}");
                 yield break;
             }
 
@@ -148,18 +170,22 @@ namespace RobotSim.Bootstrap.Components
             }
             hasArtifactsLayout = true;
 
-            if (!TryCopyRequestJsonToArtifacts(requestPath, artifactsLayout, out string copyRequestError))
+            bool copiedRequest = TryCopyRequestJsonToArtifacts(requestPath, artifactsLayout, out string requestCopyError);
+
+            if (!copiedRequest)
             {
                 LevelRunResultDTO copyFailureResult = BuildFailResult(
                     request.name,
                     FailureType.Error,
-                    copyRequestError,
+                    requestCopyError,
                     0f,
                     BuildArtifactsDto(artifactsLayout));
-                TryWriteResultJson(copyFailureResult, artifactsLayout, out _);
-                Debug.LogError($"[BootstrapRunner] Request copy failed: {copyRequestError}");
+                TryWriteResultAndEditorDebug(copyFailureResult, artifactsLayout, requestSource, out _);
+                Debug.LogError($"[BootstrapRunner] Request copy/write failed: {requestCopyError}");
                 yield break;
             }
+
+            TryWriteEditorDebugRequest(request, requestSource);
 
             if (!TryValidateRequest(request, out string requestValidationError))
             {
@@ -169,7 +195,7 @@ namespace RobotSim.Bootstrap.Components
                     requestValidationError,
                     0f,
                     BuildArtifactsDto(artifactsLayout));
-                TryWriteResultJson(invalidRequestResult, artifactsLayout, out _);
+                TryWriteResultAndEditorDebug(invalidRequestResult, artifactsLayout, requestSource, out _);
                 Debug.LogError($"[BootstrapRunner] Request validation failed: {requestValidationError}");
                 yield break;
             }
@@ -182,7 +208,7 @@ namespace RobotSim.Bootstrap.Components
                     socketError,
                     0f,
                     BuildArtifactsDto(artifactsLayout));
-                TryWriteResultJson(connectionFailureResult, artifactsLayout, out _);
+                TryWriteResultAndEditorDebug(connectionFailureResult, artifactsLayout, requestSource, out _);
                 Debug.LogError($"[BootstrapRunner] Socket pre-check failed: {socketError}");
                 yield break;
             }
@@ -195,7 +221,7 @@ namespace RobotSim.Bootstrap.Components
                     gridError,
                     0f,
                     BuildArtifactsDto(artifactsLayout));
-                TryWriteResultJson(gridFailureResult, artifactsLayout, out _);
+                TryWriteResultAndEditorDebug(gridFailureResult, artifactsLayout, requestSource, out _);
                 Debug.LogError($"[BootstrapRunner] Level grid creation failed: {gridError}");
                 yield break;
             }
@@ -208,7 +234,7 @@ namespace RobotSim.Bootstrap.Components
                     "Bootstrap wiring is incomplete: LevelPrefabProvider or Robot Prefab is missing.",
                     0f,
                     BuildArtifactsDto(artifactsLayout));
-                TryWriteResultJson(wiringFailureResult, artifactsLayout, out _);
+                TryWriteResultAndEditorDebug(wiringFailureResult, artifactsLayout, requestSource, out _);
                 Debug.LogError("[BootstrapRunner] Missing LevelPrefabProvider or Robot Prefab.");
                 yield break;
             }
@@ -224,7 +250,7 @@ namespace RobotSim.Bootstrap.Components
                     "Failed to spawn robot.",
                     0f,
                     BuildArtifactsDto(artifactsLayout));
-                TryWriteResultJson(robotFailureResult, artifactsLayout, out _);
+                TryWriteResultAndEditorDebug(robotFailureResult, artifactsLayout, requestSource, out _);
                 Debug.LogError("[BootstrapRunner] Robot spawn failed.");
                 yield return UnloadAttemptScene(sceneHandle);
                 yield break;
@@ -254,7 +280,7 @@ namespace RobotSim.Bootstrap.Components
             if (hasArtifactsLayout)
             {
                 LevelRunResultDTO result = BuildResultFromAttempt(request.name, attempt, BuildArtifactsDto(artifactsLayout));
-                if (!TryWriteResultJson(result, artifactsLayout, out string writeError))
+                if (!TryWriteResultAndEditorDebug(result, artifactsLayout, requestSource, out string writeError))
                 {
                     Debug.LogError($"[BootstrapRunner] Failed to write result.json: {writeError}");
                 }
@@ -381,6 +407,60 @@ namespace RobotSim.Bootstrap.Components
                 out error);
         }
 
+        private bool TryLoadRequest(
+            out LevelRunRequestDTO request,
+            out string requestPath,
+            out string error,
+            out RequestSource source)
+        {
+            request = default;
+            requestPath = string.Empty;
+            error = string.Empty;
+            source = RequestSource.None;
+
+            string[] args = Environment.GetCommandLineArgs();
+            if (_commandLineRequestLoader.ContainsRequestFlag(args))
+            {
+                source = RequestSource.CommandLinePath;
+                return _commandLineRequestLoader.TryLoad(
+                    args,
+                    out request,
+                    out requestPath,
+                    out error);
+            }
+
+            if (Application.isEditor && _useEditorRequestFallback)
+            {
+                source = RequestSource.EditorPath;
+
+                string editorRequestPath = _editorRequestPath?.Trim() ?? string.Empty;
+                bool hasEditorPathInput = !string.IsNullOrWhiteSpace(editorRequestPath);
+                string editorPathError = string.Empty;
+
+                if (hasEditorPathInput &&
+                    _commandLineRequestLoader.TryLoadFromPath(
+                        editorRequestPath,
+                        out request,
+                        out requestPath,
+                        out editorPathError))
+                {
+                    source = RequestSource.EditorPath;
+                    return true;
+                }
+
+                error = BuildEditorFallbackError(
+                    hasEditorPathInput,
+                    editorPathError);
+                return false;
+            }
+
+            return _commandLineRequestLoader.TryLoad(
+                args,
+                out request,
+                out requestPath,
+                out error);
+        }
+
         public bool TryCreateAttemptArtifactsLayout(
             string levelName,
             out AttemptArtifactsLayout layout,
@@ -441,6 +521,17 @@ namespace RobotSim.Bootstrap.Components
                 result,
                 layout,
                 out error);
+        }
+
+        private bool TryWriteResultAndEditorDebug(
+            LevelRunResultDTO result,
+            AttemptArtifactsLayout layout,
+            RequestSource requestSource,
+            out string error)
+        {
+            bool succeeded = TryWriteResultJson(result, layout, out error);
+            TryWriteEditorDebugResult(result, requestSource);
+            return succeeded;
         }
 
         private void AttachGroundWithBoundsRuntime(RuntimeAttemptSceneHandle handle)
@@ -609,6 +700,94 @@ namespace RobotSim.Bootstrap.Components
             return path.EndsWith(Path.DirectorySeparatorChar.ToString())
                 ? path
                 : path + Path.DirectorySeparatorChar;
+        }
+
+        private static string BuildEditorFallbackError(
+            bool hasPathInput,
+            string editorPathError)
+        {
+            if (!hasPathInput)
+            {
+                return "Missing request input. Provide CLI '-request <path>' or configure editor fallback request input.";
+            }
+
+            string normalizedPathError = string.IsNullOrWhiteSpace(editorPathError)
+                ? "request file is missing, unreadable, or invalid JSON."
+                : editorPathError;
+            return $"Editor fallback request path is invalid. {normalizedPathError}";
+        }
+
+        private void TryWriteEditorDebugRequest(LevelRunRequestDTO request, RequestSource requestSource)
+        {
+            if (!IsEditorFallbackSource(requestSource))
+            {
+                return;
+            }
+
+            TryWriteEditorDebugJson("last-request.json", request);
+        }
+
+        private void TryWriteEditorDebugResult(LevelRunResultDTO result, RequestSource requestSource)
+        {
+            if (!IsEditorFallbackSource(requestSource))
+            {
+                return;
+            }
+
+            TryWriteEditorDebugJson("last-result.json", result);
+        }
+
+        private bool IsEditorFallbackSource(RequestSource requestSource)
+        {
+            if (!Application.isEditor || string.IsNullOrWhiteSpace(_editorDebugOutputPath))
+            {
+                return false;
+            }
+
+            return requestSource == RequestSource.EditorPath;
+        }
+
+        private void TryWriteEditorDebugJson<T>(string fileName, T value)
+        {
+            string debugFolderPath = ResolveEditorDebugFolderPath();
+            if (string.IsNullOrWhiteSpace(debugFolderPath))
+            {
+                return;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(debugFolderPath);
+                string outputPath = Path.Combine(debugFolderPath, fileName);
+                string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+                File.WriteAllText(outputPath, json);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[BootstrapRunner] Failed to write editor debug JSON '{fileName}'. {ex.Message}");
+            }
+        }
+
+        private string ResolveEditorDebugFolderPath()
+        {
+            string inputPath = _editorDebugOutputPath?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(inputPath))
+            {
+                return string.Empty;
+            }
+
+            if (Path.IsPathRooted(inputPath))
+            {
+                return inputPath;
+            }
+
+            string projectRootPath = AttemptArtifactsService.ResolveProjectRootPath();
+            if (string.IsNullOrWhiteSpace(projectRootPath))
+            {
+                return string.Empty;
+            }
+
+            return Path.GetFullPath(Path.Combine(projectRootPath, inputPath));
         }
     }
 }

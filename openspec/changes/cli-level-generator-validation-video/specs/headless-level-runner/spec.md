@@ -11,6 +11,33 @@ The system SHALL accept a CLI argument `-request <path>` that points to a JSON f
 - **WHEN** the process starts without `-request`, or the file path is unreadable, or the JSON cannot be parsed
 - **THEN** the system writes `result.json` with `status = "fail"` and `failureType = "invalid_input"` and does not start the attempt
 
+### Requirement: Editor request fallback for local validation
+The system SHALL support optional request input fields on `BootstrapRunner` for local validation/testing in Unity Editor. This fallback SHALL be used only when CLI argument `-request <path>` is not provided.
+
+Fallback sources and precedence:
+- CLI request path (`-request`) has highest priority.
+- If CLI request path is absent, `editorRequestPath` file input is used when non-empty.
+- If editor fallback is enabled but `editorRequestPath` is empty or invalid, the system SHALL return `status = "fail"` and `failureType = "invalid_input"`.
+
+#### Scenario: CLI request takes precedence
+- **WHEN** both `-request` and editor fallback fields are set
+- **THEN** the system uses only the CLI request file
+
+#### Scenario: Editor fallback path is used
+- **WHEN** no CLI request is passed and `editorRequestPath` points to a valid JSON file
+- **THEN** the system loads request from `editorRequestPath` and continues to level generation
+
+#### Scenario: Invalid editor fallback input
+- **WHEN** no CLI request is passed and `editorRequestPath` input is empty, unreadable, or invalid JSON
+- **THEN** the system writes `result.json` with `status = "fail"` and `failureType = "invalid_input"` and does not start the attempt
+
+### Requirement: Optional editor debug JSON output
+When running through editor fallback input, the system SHALL support an optional debug output folder configured in `BootstrapRunner` Inspector. If configured, the resolved request and resulting output SHALL be written for local validation.
+
+#### Scenario: Editor debug output enabled
+- **WHEN** editor fallback run completes and debug output folder is configured
+- **THEN** the system writes `last-request.json` and `last-result.json` into the configured folder
+
 ### Requirement: Required request fields
 The system SHALL require these fields in the JSON request: `name`, `socketAddress`, `levelCompletionLimitSeconds`, `startRotationDegrees`, and `map`. If any field is missing or invalid, the system SHALL produce an attempt result with `status = "fail"` and `failureType = "invalid_input"`.
 

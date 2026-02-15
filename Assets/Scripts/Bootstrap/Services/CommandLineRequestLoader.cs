@@ -12,6 +12,24 @@ namespace RobotSim.Bootstrap.Services
     {
         private const string RequestFlag = "-request";
 
+        public bool ContainsRequestFlag(string[] args)
+        {
+            if (args == null || args.Length == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (string.Equals(args[i], RequestFlag, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool TryLoadFromCommandLine(
             out LevelRunRequestDTO request,
             out string requestPath,
@@ -39,7 +57,30 @@ namespace RobotSim.Bootstrap.Services
                 return false;
             }
 
-            string fullPath = Path.GetFullPath(requestPath);
+            return TryLoadFromPath(
+                requestPath,
+                out request,
+                out requestPath,
+                out error);
+        }
+
+        public bool TryLoadFromPath(
+            string inputRequestPath,
+            out LevelRunRequestDTO request,
+            out string fullRequestPath,
+            out string error)
+        {
+            request = default;
+            fullRequestPath = string.Empty;
+            error = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(inputRequestPath))
+            {
+                error = "Request path is empty.";
+                return false;
+            }
+
+            string fullPath = Path.GetFullPath(inputRequestPath);
             if (!File.Exists(fullPath))
             {
                 error = $"Request file does not exist: {fullPath}";
@@ -57,15 +98,38 @@ namespace RobotSim.Bootstrap.Services
                 return false;
             }
 
+            if (!TryLoadFromJson(json, out request, out error))
+            {
+                error = $"Invalid request JSON at '{fullPath}'. {error}";
+                return false;
+            }
+
+            fullRequestPath = fullPath;
+            return true;
+        }
+
+        public bool TryLoadFromJson(
+            string json,
+            out LevelRunRequestDTO request,
+            out string error)
+        {
+            request = default;
+            error = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                error = "Request JSON is empty.";
+                return false;
+            }
+
             try
             {
                 request = JsonConvert.DeserializeObject<LevelRunRequestDTO>(json);
-                requestPath = fullPath;
                 return true;
             }
             catch (Exception ex)
             {
-                error = $"Invalid request JSON at '{fullPath}'. {ex.Message}";
+                error = ex.Message;
                 return false;
             }
         }
