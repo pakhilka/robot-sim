@@ -45,12 +45,16 @@ The system SHALL require these fields in the JSON request: `name`, `socketAddres
 - **WHEN** the request JSON omits any required field
 - **THEN** the system writes `result.json` with `status = "fail"` and `failureType = "invalid_input"` and a friendly reason indicating which field is invalid or missing
 
-### Requirement: Socket connection
-The system SHALL attempt to connect to `socketAddress` before starting the attempt. If the connection cannot be established, the system SHALL produce an attempt result with `status = "fail"` and `failureType = "connection"`.
+### Requirement: Configurable socket connection pre-check
+The system SHALL attempt to connect to `socketAddress` before starting the attempt by default. `BootstrapRunner` SHALL expose a boolean flag to skip socket pre-check for local development flows (for example, when using LocalMock brain). When this flag is enabled, the system SHALL continue attempt startup without connection requirement.
 
 #### Scenario: Connection failure
-- **WHEN** the system cannot connect to `socketAddress`
+- **WHEN** socket pre-check is enabled and the system cannot connect to `socketAddress`
 - **THEN** the system writes `result.json` with `status = "fail"` and `failureType = "connection"` and a friendly reason indicating the connection failure
+
+#### Scenario: Socket pre-check skipped by bootstrap flag
+- **WHEN** `BootstrapRunner` has socket pre-check skip flag enabled
+- **THEN** the system skips socket pre-check and continues attempt startup without connection requirement
 
 ### Requirement: Attempt lifecycle and termination
 The system SHALL start the attempt after level generation and robot spawn are complete. The system SHALL terminate the attempt on the first terminal condition and set the attempt status as follows:

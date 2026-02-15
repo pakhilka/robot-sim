@@ -19,6 +19,7 @@
 - [x] 3.3 Implement socket connection check before attempt start
 - [x] 3.4 Ensure out-of-bounds check uses generated level bounds (camera-independent)
 - [x] 3.5 Integrate optional `GroundWithBounds` perimeter trigger as secondary out-of-bounds signal
+- [x] 3.6 Add BootstrapRunner boolean flag to skip socket pre-check for local development
 
 ## 4. Artifacts & Result Reporting
 

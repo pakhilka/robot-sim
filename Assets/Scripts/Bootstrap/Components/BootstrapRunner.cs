@@ -48,6 +48,10 @@ namespace RobotSim.Bootstrap.Components
         private int _socketConnectTimeoutMilliseconds = 3000;
 
         [SerializeField]
+        [Tooltip("Skip pre-start socket connectivity check (useful for local mock brain development).")]
+        private bool _skipSocketPreCheck;
+
+        [SerializeField]
         [Tooltip("Auto-run orchestration on scene start (CLI mode).")]
         private bool _autoRunOnStart = true;
 
@@ -200,7 +204,7 @@ namespace RobotSim.Bootstrap.Components
                 yield break;
             }
 
-            if (!TryCheckSocketConnection(request.socketAddress, out string socketError))
+            if (!_skipSocketPreCheck && !TryCheckSocketConnection(request.socketAddress, out string socketError))
             {
                 LevelRunResultDTO connectionFailureResult = BuildFailResult(
                     request.name,
@@ -211,6 +215,10 @@ namespace RobotSim.Bootstrap.Components
                 TryWriteResultAndEditorDebug(connectionFailureResult, artifactsLayout, requestSource, out _);
                 Debug.LogError($"[BootstrapRunner] Socket pre-check failed: {socketError}");
                 yield break;
+            }
+            else if (_skipSocketPreCheck)
+            {
+                Debug.Log("[BootstrapRunner] Socket pre-check skipped by BootstrapRunner flag.");
             }
 
             if (!LevelGridFactory.TryCreate(request, out LevelGrid grid, out string gridError))

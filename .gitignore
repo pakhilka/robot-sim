@@ -35,4 +35,4 @@ pnpm-debug.log*
 .env.*
 
 wokwi-tcp.tar
-./artifacts
+artifacts
