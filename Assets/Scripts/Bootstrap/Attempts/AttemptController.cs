@@ -77,6 +77,21 @@ namespace RobotSim.Bootstrap.Attempts
             Reason = string.Empty;
         }
 
+        public void ForceFail(FailureType failureType, string reason)
+        {
+            FailureType mappedFailureType = failureType == FailureType.None ? FailureType.Error : failureType;
+
+            if (!IsStarted)
+            {
+                IsStarted = true;
+            }
+
+            Status = "fail";
+            FailureType = mappedFailureType;
+            Reason = reason ?? string.Empty;
+            IsCompleted = true;
+        }
+
         private bool TryComplete(string status, FailureType failureType, string reason)
         {
             if (!IsRunning)

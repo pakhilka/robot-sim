@@ -22,20 +22,20 @@
 
 ## 4. Artifacts & Result Reporting
 
-- [ ] 4.1 Create artifacts folder `artifacts/<name>-<dateTime>-<uuid>/`
-- [ ] 4.2 Copy `request.json` into artifacts folder
-- [ ] 4.3 Write `result.json` with `status`, `failureType`, `reason`, `durationSeconds`, `artifacts`
+- [x] 4.1 Create artifacts folder `artifacts/<name>-<dateTime>-<uuid>/`
+- [x] 4.2 Copy `request.json` into artifacts folder
+- [x] 4.3 Write `result.json` with `status`, `failureType`, `reason`, `durationSeconds`, `artifacts`
 
 ## 5. Video Recording
 
-- [ ] 5.1 Define `IAttemptVideoRecorder` port and result contract for frame capture + ffmpeg
-- [ ] 5.2 Implement frame capture to `artifacts/<attempt>/frames/` (PNG per rendered frame)
-- [ ] 5.3 Encode `video.mp4` with `ffmpeg` and delete `frames/` on success
-- [ ] 5.4 Handle video recording failures as `status=fail` with `failureType=video_error`
+- [x] 5.1 Define `IAttemptVideoRecorder` port and result contract for frame capture + ffmpeg
+- [x] 5.2 Implement frame capture to `artifacts/<attempt>/frames/` (PNG per rendered frame)
+- [x] 5.3 Encode `video.mp4` with `ffmpeg` and delete `frames/` on success
+- [x] 5.4 Handle video recording failures as `status=fail` with `failureType=video_error`
 
 ## 6. Bootstrap & CLI Orchestration
 
-- [ ] 6.1 Implement CLI JSON loading via `-request <path>`
-- [ ] 6.2 Orchestrate: load request → validate → generate level → run attempt → write artifacts
-- [ ] 6.3 Ensure human-wired `BootstrapRunner` entry point is documented in code comments
+- [x] 6.1 Implement CLI JSON loading via `-request <path>`
+- [x] 6.2 Orchestrate: load request → validate → generate level → run attempt → write artifacts
+- [x] 6.3 Ensure human-wired `BootstrapRunner` entry point is documented in code comments
 - [x] 6.4 Create per-request runtime attempt scene and unload it after attempt completion
