@@ -5,6 +5,7 @@ using RobotSim.Bootstrap.Attempts;
 using RobotSim.Bootstrap.Data;
 using RobotSim.Bootstrap.Interfaces;
 using RobotSim.Bootstrap.Services;
+using RobotSim.Levels.Components;
 using RobotSim.Levels.Data;
 using RobotSim.Levels.Generation;
 using RobotSim.Levels.Interfaces;
@@ -50,7 +51,9 @@ namespace RobotSim.Bootstrap.Components
         private ILevelPrefabProvider _prefabProvider;
         private AttemptController _activeAttemptController;
         private AttemptTerminalConditionEvaluator _terminalConditionEvaluator;
+        private LevelGrid _activeLevelGrid;
         private Transform _activeRobotTransform;
+        private GroundWithBounds _activeGroundWithBounds;
 
         public AttemptController ActiveAttemptController => _activeAttemptController;
 
@@ -228,6 +231,8 @@ namespace RobotSim.Bootstrap.Components
             }
 
             AttemptController attempt = StartAttemptLifecycle(request.levelCompletionLimitSeconds);
+            AttachAttemptRuntime(grid, robot);
+            AttachGroundWithBoundsRuntime(sceneHandle);
             var videoRequest = new AttemptVideoRecorderRequest(
                 artifactsLayout.FramesPath,
                 artifactsLayout.VideoPath,
@@ -263,9 +268,11 @@ namespace RobotSim.Bootstrap.Components
 
         public AttemptController StartAttemptLifecycle(float timeLimitSeconds)
         {
+            DetachGroundWithBoundsRuntime();
             _activeAttemptController = new AttemptController(timeLimitSeconds);
             _activeAttemptController.Start();
             _terminalConditionEvaluator = null;
+            _activeLevelGrid = null;
             _activeRobotTransform = null;
             return _activeAttemptController;
         }
@@ -295,10 +302,12 @@ namespace RobotSim.Bootstrap.Components
             if (_activeAttemptController == null || grid == null || robotInstance == null)
             {
                 _terminalConditionEvaluator = null;
+                _activeLevelGrid = null;
                 _activeRobotTransform = null;
                 return;
             }
 
+            _activeLevelGrid = grid;
             _activeRobotTransform = robotInstance.transform;
             _terminalConditionEvaluator = new AttemptTerminalConditionEvaluator(grid, _activeAttemptController);
         }
@@ -338,8 +347,14 @@ namespace RobotSim.Bootstrap.Components
 
         public IEnumerator UnloadAttemptScene(RuntimeAttemptSceneHandle handle)
         {
+            if (_activeGroundWithBounds != null && handle != null && _activeGroundWithBounds.gameObject.scene == handle.Scene)
+            {
+                DetachGroundWithBoundsRuntime();
+            }
+
             if (_activeRobotTransform != null && handle != null && _activeRobotTransform.gameObject.scene == handle.Scene)
             {
+                _activeLevelGrid = null;
                 _activeRobotTransform = null;
                 _terminalConditionEvaluator = null;
             }
@@ -426,6 +441,61 @@ namespace RobotSim.Bootstrap.Components
                 result,
                 layout,
                 out error);
+        }
+
+        private void AttachGroundWithBoundsRuntime(RuntimeAttemptSceneHandle handle)
+        {
+            DetachGroundWithBoundsRuntime();
+
+            if (handle?.LevelRoot == null)
+            {
+                return;
+            }
+
+            _activeGroundWithBounds = handle.LevelRoot.GetComponentInChildren<GroundWithBounds>(true);
+            if (_activeGroundWithBounds == null)
+            {
+                return;
+            }
+
+            _activeGroundWithBounds.PerimeterTriggerEntered += OnPerimeterTriggerEntered;
+        }
+
+        private void DetachGroundWithBoundsRuntime()
+        {
+            if (_activeGroundWithBounds != null)
+            {
+                _activeGroundWithBounds.PerimeterTriggerEntered -= OnPerimeterTriggerEntered;
+                _activeGroundWithBounds = null;
+            }
+        }
+
+        private void OnPerimeterTriggerEntered(Collider other)
+        {
+            if (_activeAttemptController == null || !_activeAttemptController.IsRunning)
+            {
+                return;
+            }
+
+            if (_activeRobotTransform == null || other == null)
+            {
+                return;
+            }
+
+            if (!other.transform.IsChildOf(_activeRobotTransform))
+            {
+                return;
+            }
+
+            if (_activeLevelGrid != null &&
+                _activeLevelGrid.IsWithinBounds(_activeRobotTransform.position.x, _activeRobotTransform.position.z))
+            {
+                return;
+            }
+
+            _activeAttemptController.TryCompleteFail(
+                FailureType.OutOfBounds,
+                "Robot left level bounds (perimeter trigger).");
         }
 
         private static bool TryValidateRequest(LevelRunRequestDTO request, out string error)

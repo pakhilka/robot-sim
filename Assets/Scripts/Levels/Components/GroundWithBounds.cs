@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace RobotSim.Levels.Components
@@ -41,6 +42,23 @@ namespace RobotSim.Levels.Components
         [SerializeField]
         [Min(0.01f)]
         private float _triggerHeight = 5f;
+
+        private GroundPerimeterTrigger _northPerimeterTrigger;
+        private GroundPerimeterTrigger _southPerimeterTrigger;
+        private GroundPerimeterTrigger _eastPerimeterTrigger;
+        private GroundPerimeterTrigger _westPerimeterTrigger;
+
+        public event Action<Collider> PerimeterTriggerEntered;
+
+        private void Awake()
+        {
+            WirePerimeterTriggerEvents();
+        }
+
+        private void OnDestroy()
+        {
+            UnwirePerimeterTriggerEvents();
+        }
 
         public void Configure(float worldSizeX, float worldSizeZ)
         {
@@ -101,6 +119,8 @@ namespace RobotSim.Levels.Components
                     new Vector3(-(_triggerThickness * 0.5f), _triggerHeight * 0.5f, worldSizeZ * 0.5f),
                     new Vector3(_triggerThickness, _triggerHeight, worldSizeZ + (_triggerThickness * 2f)));
             }
+
+            WirePerimeterTriggerEvents();
         }
 
         private static void ConfigureTrigger(BoxCollider trigger, Vector3 center, Vector3 size)
@@ -108,6 +128,56 @@ namespace RobotSim.Levels.Components
             trigger.isTrigger = true;
             trigger.center = center;
             trigger.size = size;
+        }
+
+        private void WirePerimeterTriggerEvents()
+        {
+            WirePerimeterTrigger(_northTrigger, ref _northPerimeterTrigger);
+            WirePerimeterTrigger(_southTrigger, ref _southPerimeterTrigger);
+            WirePerimeterTrigger(_eastTrigger, ref _eastPerimeterTrigger);
+            WirePerimeterTrigger(_westTrigger, ref _westPerimeterTrigger);
+        }
+
+        private void WirePerimeterTrigger(
+            BoxCollider triggerCollider,
+            ref GroundPerimeterTrigger triggerComponent)
+        {
+            if (triggerCollider == null)
+            {
+                return;
+            }
+
+            triggerComponent = triggerCollider.GetComponent<GroundPerimeterTrigger>();
+            if (triggerComponent == null)
+            {
+                triggerComponent = triggerCollider.gameObject.AddComponent<GroundPerimeterTrigger>();
+            }
+
+            triggerComponent.TriggerEntered -= OnPerimeterTriggerEntered;
+            triggerComponent.TriggerEntered += OnPerimeterTriggerEntered;
+        }
+
+        private void UnwirePerimeterTriggerEvents()
+        {
+            UnwirePerimeterTrigger(_northPerimeterTrigger);
+            UnwirePerimeterTrigger(_southPerimeterTrigger);
+            UnwirePerimeterTrigger(_eastPerimeterTrigger);
+            UnwirePerimeterTrigger(_westPerimeterTrigger);
+        }
+
+        private void UnwirePerimeterTrigger(GroundPerimeterTrigger triggerComponent)
+        {
+            if (triggerComponent == null)
+            {
+                return;
+            }
+
+            triggerComponent.TriggerEntered -= OnPerimeterTriggerEntered;
+        }
+
+        private void OnPerimeterTriggerEntered(Collider other)
+        {
+            PerimeterTriggerEntered?.Invoke(other);
         }
     }
 }
