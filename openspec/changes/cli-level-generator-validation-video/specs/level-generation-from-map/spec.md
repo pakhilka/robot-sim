@@ -32,6 +32,23 @@ The system SHALL build a grid with width equal to the number of columns and heig
 - **WHEN** the map has width 3 and height 2
 - **THEN** the grid spans X in `[0, 20]` and Z in `[0, 30]` with cell centers at `(rowIndex * 10 + 5, 0, colIndex * 10 + 5)`
 
+### Requirement: Level bounds contract for attempt validation
+The system SHALL provide level world bounds derived from generated grid dimensions and cell size for attempt validation:
+- X bounds: `[0, rowCount * 10)`
+- Z bounds: `[0, columnCount * 10)`
+These bounds SHALL be the source for out-of-bounds checks in attempt control.
+
+#### Scenario: Bounds derived from map
+- **WHEN** the map has 5 rows and 4 columns
+- **THEN** level bounds are X in `[0, 50)` and Z in `[0, 40)` for out-of-bounds checks
+
+### Requirement: GroundWithBounds prefab generation
+The system SHALL support an optional single `GroundWithBounds` prefab provided by `ILevelPrefabProvider`. If provided, the system SHALL instantiate it once per generated level and configure it to the map-derived world size.
+
+#### Scenario: GroundWithBounds provided
+- **WHEN** provider returns a valid `GroundWithBounds` prefab
+- **THEN** the system spawns exactly one instance and configures floor/trigger perimeter to the level world size
+
 ### Requirement: Start rotation
 The system SHALL spawn the robot at the Start cell center and apply `startRotationDegrees` as a yaw rotation around the Y axis.
 

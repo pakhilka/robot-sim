@@ -38,8 +38,29 @@ The system SHALL start the attempt after level generation and robot spawn are co
 
 #### Scenario: Out-of-bounds
 - **WHEN** the robot leaves the defined level bounds
--- **THEN** the system ends the attempt with `status = "fail"` and `failureType = "out_of_bounds"`
+- **THEN** the system ends the attempt with `status = "fail"` and `failureType = "out_of_bounds"`
 
 #### Scenario: Time limit exceeded
 - **WHEN** elapsed attempt time exceeds `levelCompletionLimitSeconds`
--- **THEN** the system ends the attempt with `status = "fail"` and `failureType = "timeout"`
+- **THEN** the system ends the attempt with `status = "fail"` and `failureType = "timeout"`
+
+### Requirement: Out-of-bounds uses level bounds, not camera
+The system SHALL evaluate out-of-bounds using generated level world bounds derived from the map grid and cell size. Camera viewport/frustum position SHALL NOT affect out-of-bounds detection.
+
+#### Scenario: Camera-independent out-of-bounds
+- **WHEN** the camera is moved or the run is executed in headless mode
+- **THEN** out-of-bounds detection is still based only on generated level bounds
+
+### Requirement: GroundWithBounds trigger integration
+If a `GroundWithBounds` prefab is configured and instantiated for the attempt, perimeter trigger hits MAY be used as an additional out-of-bounds signal. The final decision SHALL still remain consistent with level bounds.
+
+#### Scenario: Trigger-assisted out-of-bounds
+- **WHEN** the robot enters a perimeter trigger from `GroundWithBounds`
+- **THEN** the attempt is finalized as out-of-bounds without relying on camera visibility
+
+### Requirement: Runtime attempt scene isolation
+For each incoming run request, the system SHALL create a dedicated runtime attempt scene, instantiate generated level objects and robot in that scene, and unload that scene after attempt completion and artifact write.
+
+#### Scenario: Sequential requests in one process
+- **WHEN** two run requests are processed sequentially by the same process
+- **THEN** each request runs in its own runtime attempt scene, and the previous attempt scene is unloaded before the next attempt starts
