@@ -12,15 +12,18 @@ namespace RobotSim.Robot.Brains
         public static IRobotBrain CreateBrain(
             BrainType type,
             string tcpHost = "127.0.0.1",
-            int tcpPort = 9999)
+            int tcpPort = 9999,
+            BrainConfig config = null)
         {
+            BrainConfig effectiveConfig = config ?? new BrainConfig();
+
             return type switch
             {
                 BrainType.WokwiTcp => new WokwiTcpBrain(
                     new TcpClientService(tcpHost, tcpPort),
-                    new BrainConfig()
+                    effectiveConfig
                 ),
-                BrainType.LocalMock => new LocalMockBrain(new BrainConfig()),
+                BrainType.LocalMock => new LocalMockBrain(effectiveConfig),
                 _ => throw new System.ArgumentException($"Unknown brain type: {type}")
             };
         }

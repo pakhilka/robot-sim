@@ -49,7 +49,8 @@ namespace RobotSim.Robot.Brains
             LogDecisionTransition(decision, sensors.distanceFront);
             _lastDecisionState = decision;
 
-            return new BrainStepResultDTO(BrainStatusDTO.Ready, command, "mock_brain");
+            string signal = decision == DecisionState.TurnRight ? _config.AlarmToken : string.Empty;
+            return new BrainStepResultDTO(BrainStatusDTO.Ready, command, signal);
         }
 
         private void LogDistanceInput(float distanceFront)

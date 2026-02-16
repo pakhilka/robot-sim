@@ -1,5 +1,13 @@
 namespace RobotSim.Bootstrap.Data
 {
+    // Keep RequestSource in an already-included Data file so BootstrapRunner can always resolve it.
+    internal enum RequestSource
+    {
+        None = 0,
+        CommandLinePath,
+        EditorPath
+    }
+
     /// <summary>
     /// Output contract for runtime frame capture and external encoding.
     /// </summary>

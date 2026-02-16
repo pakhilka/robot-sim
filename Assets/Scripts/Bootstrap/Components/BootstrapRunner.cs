@@ -27,13 +27,6 @@ namespace RobotSim.Bootstrap.Components
     /// </summary>
     public sealed class BootstrapRunner : MonoBehaviour
     {
-        private enum RequestSource
-        {
-            None = 0,
-            CommandLinePath,
-            EditorPath
-        }
-
         [Header("Scene Wiring")]
         [SerializeField]
         [Tooltip("MonoBehaviour that implements ILevelPrefabProvider (LevelPrefabProvider).")]

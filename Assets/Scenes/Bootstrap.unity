@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _wallPrefab: {fileID: 3274919250295178441, guid: 5eb024f64d6644ab2bf80782ad91613b, type: 3}
-  _startPrefab: {fileID: 215702285039249998, guid: a68a8f3ebc8c141e6ba7cb056cf0f387, type: 3}
+  _startPrefab: {fileID: 6638815147282906747, guid: e69809ce8260e4d32a5af8e2133a1f61, type: 3}
   _finishPrefab: {fileID: 8660965361555044717, guid: 28afa54a35b6847208e20270476228ed, type: 3}
   _groundWithBoundsPrefab: {fileID: 5431528826567971657, guid: b6e04caf5d31947ef999f8fc71cfbc5f, type: 3}
 --- !u!114 &1124537562
@@ -318,11 +318,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _levelPrefabProviderBehaviour: {fileID: 1124537561}
-  _robotPrefab: {fileID: 8852453508267980177, guid: 78f6d2e9951d04c6c9c1b7ef951530cd, type: 3}
+  _robotPrefab: {fileID: 3073114032849403687, guid: cde4facf027804e56bc4eafe7e8d2a53, type: 3}
   _socketConnectTimeoutMilliseconds: 3000
+  _skipSocketPreCheck: 1
   _autoRunOnStart: 1
   _useEditorRequestFallback: 1
-  _editorRequestPath: /Users/ilyastipakov/Documents/unity_hub/RobotSim/Builds/requests/request-fail-timeout.json
+  _editorRequestPath: /Users/ilyastipakov/Documents/unity_hub/RobotSim/Builds/requests/request-pass-straight.json
   _editorDebugOutputPath: 
 --- !u!1 &1964806930
 GameObject:
