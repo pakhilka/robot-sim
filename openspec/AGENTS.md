@@ -77,7 +77,7 @@ Rules:
 ## Git Branch Naming (required)
 - Features: `feature/<name>`
 - Bug fixes: `bugfix/<name>`
-- (Optional) Chores/infra: `chore/<name>`
+- Infrastructure/process/tooling: `infrastructure/<name>`
 
 Naming rules:
 - Use lowercase and hyphens: `feature/tcp-reconnect`, `bugfix/motor-turning`
