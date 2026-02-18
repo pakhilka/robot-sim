@@ -83,16 +83,19 @@ namespace RobotSim.Levels.Components
             scale.z = worldSizeZ / _floorBaseSizeZ;
             _floorTransform.localScale = scale;
 
-            _floorTransform.localPosition = new Vector3(worldSizeX * 0.5f, _floorTransform.localPosition.y, worldSizeZ * 0.5f);
+            _floorTransform.localPosition = new Vector3(0f, _floorTransform.localPosition.y, 0f);
         }
 
         private void ConfigurePerimeterTriggers(float worldSizeX, float worldSizeZ)
         {
+            float halfX = worldSizeX * 0.5f;
+            float halfZ = worldSizeZ * 0.5f;
+
             if (_northTrigger != null)
             {
                 ConfigureTrigger(
                     _northTrigger,
-                    new Vector3(worldSizeX * 0.5f, _triggerHeight * 0.5f, worldSizeZ + (_triggerThickness * 0.5f)),
+                    new Vector3(0f, _triggerHeight * 0.5f, halfZ + (_triggerThickness * 0.5f)),
                     new Vector3(worldSizeX + (_triggerThickness * 2f), _triggerHeight, _triggerThickness));
             }
 
@@ -100,7 +103,7 @@ namespace RobotSim.Levels.Components
             {
                 ConfigureTrigger(
                     _southTrigger,
-                    new Vector3(worldSizeX * 0.5f, _triggerHeight * 0.5f, -(_triggerThickness * 0.5f)),
+                    new Vector3(0f, _triggerHeight * 0.5f, -(halfZ + (_triggerThickness * 0.5f))),
                     new Vector3(worldSizeX + (_triggerThickness * 2f), _triggerHeight, _triggerThickness));
             }
 
@@ -108,7 +111,7 @@ namespace RobotSim.Levels.Components
             {
                 ConfigureTrigger(
                     _eastTrigger,
-                    new Vector3(worldSizeX + (_triggerThickness * 0.5f), _triggerHeight * 0.5f, worldSizeZ * 0.5f),
+                    new Vector3(halfX + (_triggerThickness * 0.5f), _triggerHeight * 0.5f, 0f),
                     new Vector3(_triggerThickness, _triggerHeight, worldSizeZ + (_triggerThickness * 2f)));
             }
 
@@ -116,7 +119,7 @@ namespace RobotSim.Levels.Components
             {
                 ConfigureTrigger(
                     _westTrigger,
-                    new Vector3(-(_triggerThickness * 0.5f), _triggerHeight * 0.5f, worldSizeZ * 0.5f),
+                    new Vector3(-(halfX + (_triggerThickness * 0.5f)), _triggerHeight * 0.5f, 0f),
                     new Vector3(_triggerThickness, _triggerHeight, worldSizeZ + (_triggerThickness * 2f)));
             }
 

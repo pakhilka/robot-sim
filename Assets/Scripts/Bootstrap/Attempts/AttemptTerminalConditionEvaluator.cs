@@ -48,10 +48,7 @@ namespace RobotSim.Bootstrap.Attempts
 
         private bool IsInsideFinishCell(float x, float z)
         {
-            float minX = _grid.FinishRow * _grid.CellSize;
-            float maxX = minX + _grid.CellSize;
-            float minZ = _grid.FinishCol * _grid.CellSize;
-            float maxZ = minZ + _grid.CellSize;
+            (float minX, float maxX, float minZ, float maxZ) = _grid.GetCellBounds(_grid.FinishRow, _grid.FinishCol);
 
             return x >= minX && x < maxX && z >= minZ && z < maxZ;
         }

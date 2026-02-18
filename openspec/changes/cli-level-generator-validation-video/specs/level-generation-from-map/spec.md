@@ -25,22 +25,25 @@ The system SHALL require all map rows to have the same length and the map to be 
 - **WHEN** the map contains rows with different lengths
 - **THEN** the system produces an attempt result with `status = "fail"` and `failureType = "invalid_input"` and a friendly reason
 
-### Requirement: Grid placement and coordinates
-The system SHALL build a grid with width equal to the number of columns and height equal to the number of rows. The system SHALL map column indices to +Z and row indices to +X with a cell size of 10.0 world units, placing cell centers at `(rowIndex * 10 + 5, 0, colIndex * 10 + 5)`. The system SHALL instantiate Prefabs for `W`, `S`, and `F` cells at their respective positions.
+### Requirement: Grid placement and centered coordinates
+The system SHALL build a grid with width equal to the number of columns and height equal to the number of rows. The system SHALL map column indices to +Z and row indices to +X with a cell size of 10.0 world units. The generated map SHALL be centered around world origin `(0, 0, 0)` (map center at origin). Cell centers SHALL be placed using centered coordinates:
+- `x = -((rowCount * 10) / 2) + (rowIndex * 10 + 5)`
+- `z = -((columnCount * 10) / 2) + (colIndex * 10 + 5)`
+The system SHALL instantiate Prefabs for `W`, `S`, and `F` cells at their respective positions.
 
 #### Scenario: Grid coordinates
 - **WHEN** the map has width 3 and height 2
-- **THEN** the grid spans X in `[0, 20]` and Z in `[0, 30]` with cell centers at `(rowIndex * 10 + 5, 0, colIndex * 10 + 5)`
+- **THEN** the grid spans X in `[-10, 10]` and Z in `[-15, 15]` with centered cell centers
 
 ### Requirement: Level bounds contract for attempt validation
 The system SHALL provide level world bounds derived from generated grid dimensions and cell size for attempt validation:
-- X bounds: `[0, rowCount * 10)`
-- Z bounds: `[0, columnCount * 10)`
+- X bounds: `[-(rowCount * 10)/2, +(rowCount * 10)/2)`
+- Z bounds: `[-(columnCount * 10)/2, +(columnCount * 10)/2)`
 These bounds SHALL be the source for out-of-bounds checks in attempt control.
 
 #### Scenario: Bounds derived from map
 - **WHEN** the map has 5 rows and 4 columns
-- **THEN** level bounds are X in `[0, 50)` and Z in `[0, 40)` for out-of-bounds checks
+- **THEN** level bounds are X in `[-25, 25)` and Z in `[-20, 20)` for out-of-bounds checks
 
 ### Requirement: GroundWithBounds prefab generation
 The system SHALL support an optional single `GroundWithBounds` prefab provided by `ILevelPrefabProvider`. If provided, the system SHALL instantiate it once per generated level and configure it to the map-derived world size.
