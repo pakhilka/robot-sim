@@ -24,11 +24,31 @@ The system SHALL save the video as `video.mp4` inside the artifacts folder:
 - **THEN** `video.mp4` exists in the artifacts folder and its path is referenced in `result.json`
 
 ### Requirement: Video encoding with ffmpeg
-After frame capture ends, the system SHALL invoke `ffmpeg` (available on PATH) to encode `video.mp4` from the frames. The video framerate SHALL match the effective capture rate (frames captured divided by attempt duration) to avoid time distortion.
+After frame capture ends, the system SHALL invoke `ffmpeg` to encode `video.mp4` from the frames. The video framerate SHALL match the effective capture rate (frames captured divided by attempt duration) to avoid time distortion.
+The executable discovery order SHALL support local development and CI:
+1) `ROBOTSIM_FFMPEG_PATH` environment variable
+2) project-local `Tools/ffmpeg/ffmpeg` (or `ffmpeg.exe`)
+3) executable discovery via `PATH`
+4) common system locations (for example `/opt/homebrew/bin/ffmpeg`, `/usr/local/bin/ffmpeg`)
 
 #### Scenario: ffmpeg encoding
 - **WHEN** frame capture ends successfully
 - **THEN** `ffmpeg` is executed to encode `video.mp4` using the captured frames
+
+#### Scenario: ffmpeg found via PATH
+- **WHEN** `ffmpeg` exists in process `PATH`
+- **THEN** the system resolves it and starts encoding successfully
+
+#### Scenario: ffmpeg found via project-local tools folder
+- **WHEN** `PATH` does not contain `ffmpeg`, but `Tools/ffmpeg/ffmpeg` exists in project root
+- **THEN** the system resolves project-local executable and encodes `video.mp4`
+
+### Requirement: Encoder-compatible frame size
+When encoding with `libx264` + `yuv420p`, the system SHALL ensure output frame width and height are even numbers.
+
+#### Scenario: Odd frame size in runtime capture
+- **WHEN** captured frame dimensions are odd (for example `1703x958`)
+- **THEN** the encoder input is adjusted to even dimensions before writing `video.mp4`, and encoding does not fail only because of odd frame size
 
 ### Requirement: Frames cleanup
 After `video.mp4` is successfully produced, the system SHALL delete the `frames/` folder to reduce disk usage.
@@ -38,7 +58,7 @@ After `video.mp4` is successfully produced, the system SHALL delete the `frames/
 - **THEN** `artifacts/<attempt>/frames/` no longer exists
 
 ### Requirement: Video failure handling
-If frame capture fails to start, `ffmpeg` is not found on PATH, or encoding fails, the system SHALL mark the attempt result as `status = "fail"` with `failureType = "video_error"` and set `reason` to indicate the video failure.
+If frame capture fails to start, `ffmpeg` is not found by executable discovery, or encoding fails, the system SHALL mark the attempt result as `status = "fail"` with `failureType = "video_error"` and set `reason` to indicate the video failure.
 
 #### Scenario: Recording failure
 - **WHEN** frame capture fails to start or `ffmpeg` encoding fails
