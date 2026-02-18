@@ -318,12 +318,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _levelPrefabProviderBehaviour: {fileID: 1124537561}
-  _robotPrefab: {fileID: 3073114032849403687, guid: cde4facf027804e56bc4eafe7e8d2a53, type: 3}
+  _robotPrefab: {fileID: 8739921983372293180, guid: cde4facf027804e56bc4eafe7e8d2a53, type: 3}
   _socketConnectTimeoutMilliseconds: 3000
   _skipSocketPreCheck: 1
   _autoRunOnStart: 1
   _useEditorRequestFallback: 1
-  _editorRequestPath: /Users/ilyastipakov/Documents/unity_hub/RobotSim/Builds/requests/request-pass-straight.json
+  _editorRequestPath: /Users/ilyastipakov/Documents/unity_hub/RobotSim/Builds/requests/request-pass-with-two-turns.json
   _editorDebugOutputPath: 
 --- !u!1 &1964806930
 GameObject:
