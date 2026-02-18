@@ -69,7 +69,7 @@ Before marking work "done":
 Branch naming (required):
 - `feature/<name>`
 - `bugfix/<name>`
-- optional `chore/<name>`
+- `infrastructure/<name>`
 
 Command execution policy:
 - The agent may propose commands, but must ask for explicit confirmation before running any shell commands (including all git commands).
