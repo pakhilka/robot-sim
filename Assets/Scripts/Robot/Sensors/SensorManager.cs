@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using RobotSim.Interfaces;
-using RobotSim.Data.DTOs;
-using RobotSim.Components;
+using RobotSim.Robot.Interfaces;
+using RobotSim.Robot.Data.DTOs;
+using RobotSim.Robot.Components;
 
-namespace RobotSim.Sensors
+namespace RobotSim.Robot.Sensors
 {
     /// <summary>
     /// Менеджер датчиков робота

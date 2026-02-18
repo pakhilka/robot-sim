@@ -1,9 +1,9 @@
 using UnityEngine;
-using RobotSim.Brains;
-using RobotSim.Sensors;
-using RobotSim.Data.DTOs;
+using RobotSim.Robot.Brains;
+using RobotSim.Robot.Sensors;
+using RobotSim.Robot.Data.DTOs;
 
-namespace RobotSim.Components
+namespace RobotSim.Robot.Components
 {
     /// <summary>
     /// MonoBehaviour компонент - низкоуровневый контроллер робота

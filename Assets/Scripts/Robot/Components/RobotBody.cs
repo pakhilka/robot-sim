@@ -1,7 +1,7 @@
 using UnityEngine;
-using RobotSim.Data.DTOs;
+using RobotSim.Robot.Data.DTOs;
 
-namespace RobotSim.Components
+namespace RobotSim.Robot.Components
 {
     /// <summary>
     /// MonoBehaviour компонент - физическое тело робота с моторами
@@ -22,6 +22,10 @@ namespace RobotSim.Components
         [Tooltip("На будущее: тормозное усилие, пока не используется")]
         private float _motorBrakingForce = 10f;
 
+        [SerializeField]
+        [Tooltip("Максимальная скорость поворота вокруг Y при разнице скоростей моторов.")]
+        private float _maxTurnDegreesPerSecond = 180f;
+
         private Rigidbody _rb;
         private float _leftSpeed;
         private float _rightSpeed;
@@ -36,14 +40,37 @@ namespace RobotSim.Components
 
         private void FixedUpdate()
         {
-            // Усреднение скоростей
-            _currentSpeed = (_leftSpeed + _rightSpeed) / 2f;
-            _currentSpeed = Mathf.Clamp(_currentSpeed, -_maxSpeed, _maxSpeed);
+            bool pivotTurn = _leftSpeed * _rightSpeed < 0f;
+            if (pivotTurn)
+            {
+                // Для разворота на месте полностью гасим линейную скорость,
+                // чтобы робот не продолжал "въезжать" в стену во время поворота.
+                _currentSpeed = 0f;
+                _rb.linearVelocity = Vector3.zero;
+            }
+            else
+            {
+                // Усреднение скоростей
+                _currentSpeed = (_leftSpeed + _rightSpeed) / 2f;
+                _currentSpeed = Mathf.Clamp(_currentSpeed, -_maxSpeed, _maxSpeed);
 
-            // Применяем скорость вперёд
-            Vector3 vel = transform.forward * _currentSpeed;
-            Vector3 currentVelocity = _rb.linearVelocity;
-            _rb.linearVelocity = new Vector3(vel.x, currentVelocity.y, vel.z);
+                // Применяем поступательную скорость в плоскости XZ (top-down режим).
+                Vector3 vel = transform.forward * _currentSpeed;
+                _rb.linearVelocity = new Vector3(vel.x, 0f, vel.z);
+            }
+
+            // Дифференциальный поворот: разница левого/правого мотора задает скорость поворота.
+            float turnInput = 0f;
+            if (_maxSpeed > 0f)
+            {
+                turnInput = (_rightSpeed - _leftSpeed) / (2f * _maxSpeed);
+            }
+
+            float yawDelta = turnInput * _maxTurnDegreesPerSecond * Time.fixedDeltaTime;
+            if (!Mathf.Approximately(yawDelta, 0f))
+            {
+                _rb.MoveRotation(_rb.rotation * Quaternion.Euler(0f, yawDelta, 0f));
+            }
         }
 
         /// <summary>
@@ -70,6 +97,11 @@ namespace RobotSim.Components
             if (_motorBrakingForce < 0f)
             {
                 _motorBrakingForce = 0f;
+            }
+
+            if (_maxTurnDegreesPerSecond < 0f)
+            {
+                _maxTurnDegreesPerSecond = 0f;
             }
         }
     }

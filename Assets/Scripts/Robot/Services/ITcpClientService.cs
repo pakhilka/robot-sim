@@ -1,4 +1,4 @@
-namespace RobotSim.Services
+namespace RobotSim.Robot.Services
 {
     /// <summary>
     /// Интерфейс для TCP сервиса коммуникации

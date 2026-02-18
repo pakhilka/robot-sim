@@ -1,4 +1,4 @@
-namespace RobotSim.Data.DTOs
+namespace RobotSim.Robot.Data.DTOs
 {
     /// <summary>
     /// DTO - Статус мозга робота

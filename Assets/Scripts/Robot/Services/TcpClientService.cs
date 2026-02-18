@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using UnityEngine;
 
-namespace RobotSim.Services
+namespace RobotSim.Robot.Services
 {
     /// <summary>
     /// Сервис для TCP коммуникации с backend

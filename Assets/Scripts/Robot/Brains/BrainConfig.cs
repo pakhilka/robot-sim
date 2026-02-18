@@ -1,6 +1,6 @@
-using RobotSim.Data.DTOs;
+using RobotSim.Robot.Data.DTOs;
 
-namespace RobotSim.Brains
+namespace RobotSim.Robot.Brains
 {
     /// <summary>
     /// Конфигурация для мозгов робота
@@ -10,6 +10,10 @@ namespace RobotSim.Brains
         public string ReadyToken = "Parktronik ready";
         public string AlarmToken = "alarm";
         public MotorCommandDTO DriveCommand = new(1f, 1f);
+        public MotorCommandDTO LocalRightTurnCommand = new(-1f, 1f);
+        public float LocalRightTurnDistanceThresholdMeters = 5f;
+        public float ControllerMinTurnDurationSeconds = 0.5f;
+        public int ControllerAlarmClearTicksRequired = 3;
         public float BrakeTime = 0.6f;
         public float AccelTime = 0.25f;
         public float StopDistance = 10f;
