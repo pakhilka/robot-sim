@@ -95,3 +95,10 @@ For each incoming run request, the system SHALL create a dedicated runtime attem
 #### Scenario: Sequential requests in one process
 - **WHEN** two run requests are processed sequentially by the same process
 - **THEN** each request runs in its own runtime attempt scene, and the previous attempt scene is unloaded before the next attempt starts
+
+### Requirement: Runtime attempt scene physics simulation
+The system SHALL ensure active physics simulation for robot and level objects spawned into runtime attempt scenes, so movement and collisions are processed during the attempt.
+
+#### Scenario: Robot spawned in runtime attempt scene
+- **WHEN** the robot is spawned in a runtime attempt scene
+- **THEN** its Rigidbody movement is simulated and applied without requiring manual hierarchy moves to the Bootstrap scene

@@ -22,9 +22,14 @@ namespace RobotSim.Bootstrap.Services
         public RuntimeAttemptSceneHandle CreateAttemptScene(string requestName)
         {
             string sceneName = BuildSceneName(requestName);
+
+            // TEMP(runtime-scene-physics-fix):
+            // Локальная physics scene (Physics3D) требует ручной Simulate().
+            // Сейчас в BootstrapRunner это не реализовано, поэтому для стабильных
+            // тестовых запусков используем дефолтную симуляцию физики.
             Scene attemptScene = SceneManager.CreateScene(
                 sceneName,
-                new CreateSceneParameters(LocalPhysicsMode.Physics3D));
+                new CreateSceneParameters(LocalPhysicsMode.None));
 
             GameObject root = new("AttemptRoot");
             SceneManager.MoveGameObjectToScene(root, attemptScene);
