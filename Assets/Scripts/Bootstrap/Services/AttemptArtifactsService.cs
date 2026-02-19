@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using RobotSim.Bootstrap.Data;
 using RobotSim.Robot.Data.Artifacts;
+using RobotSim.Robot.Data.DTOs;
 using RobotSim.Robot.Data.Results;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -134,6 +135,36 @@ namespace RobotSim.Bootstrap.Services
             }
         }
 
+        public bool TryWriteEditorDebugRequest(
+            LevelRunRequestDTO request,
+            RequestSource requestSource,
+            string editorDebugOutputPath,
+            out string error)
+        {
+            error = string.Empty;
+            if (!ShouldWriteEditorDebug(requestSource, editorDebugOutputPath))
+            {
+                return true;
+            }
+
+            return TryWriteEditorDebugJson("last-request.json", request, editorDebugOutputPath, out error);
+        }
+
+        public bool TryWriteEditorDebugResult(
+            LevelRunResultDTO result,
+            RequestSource requestSource,
+            string editorDebugOutputPath,
+            out string error)
+        {
+            error = string.Empty;
+            if (!ShouldWriteEditorDebug(requestSource, editorDebugOutputPath))
+            {
+                return true;
+            }
+
+            return TryWriteEditorDebugJson("last-result.json", result, editorDebugOutputPath, out error);
+        }
+
         public bool TryCreateLayout(
             string levelName,
             out AttemptArtifactsLayout layout,
@@ -157,6 +188,70 @@ namespace RobotSim.Bootstrap.Services
 
             string projectRootPath = Path.GetFullPath(Path.Combine(assetsPath, ".."));
             return projectRootPath;
+        }
+
+        private static bool ShouldWriteEditorDebug(
+            RequestSource requestSource,
+            string editorDebugOutputPath)
+        {
+            if (!Application.isEditor || requestSource != RequestSource.EditorPath)
+            {
+                return false;
+            }
+
+            return !string.IsNullOrWhiteSpace(editorDebugOutputPath);
+        }
+
+        private static bool TryWriteEditorDebugJson<T>(
+            string fileName,
+            T value,
+            string editorDebugOutputPath,
+            out string error)
+        {
+            error = string.Empty;
+
+            string debugFolderPath = ResolveEditorDebugFolderPath(editorDebugOutputPath);
+            if (string.IsNullOrWhiteSpace(debugFolderPath))
+            {
+                error = "Failed to resolve editor debug output folder path.";
+                return false;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(debugFolderPath);
+                string outputPath = Path.Combine(debugFolderPath, fileName);
+                string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+                File.WriteAllText(outputPath, json);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                error = $"Failed to write editor debug JSON '{fileName}'. {ex.Message}";
+                return false;
+            }
+        }
+
+        private static string ResolveEditorDebugFolderPath(string inputPath)
+        {
+            string normalizedInput = inputPath?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(normalizedInput))
+            {
+                return string.Empty;
+            }
+
+            if (Path.IsPathRooted(normalizedInput))
+            {
+                return normalizedInput;
+            }
+
+            string projectRootPath = ResolveProjectRootPath();
+            if (string.IsNullOrWhiteSpace(projectRootPath))
+            {
+                return string.Empty;
+            }
+
+            return Path.GetFullPath(Path.Combine(projectRootPath, normalizedInput));
         }
 
         private static string SanitizeName(string name)
