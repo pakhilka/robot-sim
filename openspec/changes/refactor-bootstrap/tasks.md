@@ -32,6 +32,6 @@
 
 ## 6. Verification and Task Tracking
 
-- [ ] 6.1 Mark completed tasks in this file as implementation progresses
+- [x] 6.1 Mark completed tasks in this file as implementation progresses
 - [ ] 6.2 Run compile/smoke verification workflow and confirm no new Unity Console errors
 - [ ] 6.3 Prepare handoff summary with pending work and next `bd ready` item
