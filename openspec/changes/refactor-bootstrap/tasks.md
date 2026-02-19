@@ -27,7 +27,7 @@
 ## 5. Use Case and Bootstrap Facade Refactor
 
 - [x] 5.1 Implement `RunAttemptUseCase` that orchestrates `load -> prepare -> setup runtime -> execute -> finalize -> teardown`
-- [ ] 5.2 Refactor `BootstrapRunner` into a thin `MonoBehaviour` facade delegating `Awake/Start/Update` to use case/services
+- [x] 5.2 Refactor `BootstrapRunner` into a thin `MonoBehaviour` facade delegating `Awake/Start/Update` to use case/services
 - [ ] 5.3 Ensure runtime behavior parity for success/failure paths and preserve current JSON contract outputs
 
 ## 6. Verification and Task Tracking
