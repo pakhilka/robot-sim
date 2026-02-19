@@ -1,7 +1,7 @@
 namespace RobotSim.Bootstrap.Data
 {
     // Keep RequestSource in an already-included Data file so BootstrapRunner can always resolve it.
-    internal enum RequestSource
+    public enum RequestSource
     {
         None = 0,
         CommandLinePath,
