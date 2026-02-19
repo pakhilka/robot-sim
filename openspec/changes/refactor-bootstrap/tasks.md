@@ -28,7 +28,7 @@
 
 - [x] 5.1 Implement `RunAttemptUseCase` that orchestrates `load -> prepare -> setup runtime -> execute -> finalize -> teardown`
 - [x] 5.2 Refactor `BootstrapRunner` into a thin `MonoBehaviour` facade delegating `Awake/Start/Update` to use case/services
-- [ ] 5.3 Ensure runtime behavior parity for success/failure paths and preserve current JSON contract outputs
+- [x] 5.3 Ensure runtime behavior parity for success/failure paths and preserve current JSON contract outputs
 
 ## 6. Verification and Task Tracking
 

@@ -281,7 +281,10 @@ namespace RobotSim.Bootstrap.Services
                 Screen.width,
                 Screen.height);
 
-            _attemptVideoService.TryStart(_runtimeState.AttemptController, videoRequest, out _);
+            if (_runtimeState.AttemptController != null && _runtimeState.AttemptController.IsRunning)
+            {
+                _attemptVideoService.TryStart(_runtimeState.AttemptController, videoRequest, out _);
+            }
 
             while (_runtimeState.AttemptController != null && _runtimeState.AttemptController.IsRunning)
             {
