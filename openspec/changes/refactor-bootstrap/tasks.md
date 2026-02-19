@@ -20,7 +20,7 @@
 ## 4. Execution, Video, and Artifacts Services
 
 - [x] 4.1 Implement `AttemptExecutionService` for attempt start/tick/evaluate/terminal completion lifecycle
-- [ ] 4.2 Implement `AttemptVideoService` for start/capture/stop and map failures to `FailureType.VideoError`
+- [x] 4.2 Implement `AttemptVideoService` for start/capture/stop and map failures to `FailureType.VideoError`
 - [ ] 4.3 Refine `AttemptArtifactsService` responsibilities to artifact layout, request copy, result write, and editor debug JSON
 - [ ] 4.4 Implement `AttemptResultFactory` to build final `LevelRunResultDTO` from attempt state and artifact paths
 
