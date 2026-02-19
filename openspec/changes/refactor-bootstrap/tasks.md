@@ -9,7 +9,7 @@
 - [x] 2.1 Implement `RequestLoadingService` using current CLI/editor fallback behavior and return request + source + resolved path
 - [x] 2.2 Implement `RequestValidationService` for business validation (`name`, `map`, limits, and `socketAddress` format)
 - [x] 2.3 Implement `LevelPreparationService` that builds `LevelGrid` from request and returns preparation failure reasons
-- [ ] 2.4 Implement `ConnectionProbeService` wrapper for pre-start socket connectivity checks
+- [x] 2.4 Implement `ConnectionProbeService` wrapper for pre-start socket connectivity checks
 
 ## 3. Runtime Scene and Binding Services
 
