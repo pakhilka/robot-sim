@@ -13,7 +13,7 @@
 
 ## 3. Runtime Scene and Binding Services
 
-- [ ] 3.1 Implement `RuntimeSceneService` for create/spawn/unload runtime scene operations
+- [x] 3.1 Implement `RuntimeSceneService` for create/spawn/unload runtime scene operations
 - [ ] 3.2 Implement `AttemptRuntimeBindingService` to bind robot transform, terminal evaluator, and perimeter trigger subscriptions
 - [ ] 3.3 Implement `AttemptTeardownService` for idempotent detach/stop/unload/clear cleanup
 
