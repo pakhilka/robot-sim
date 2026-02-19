@@ -71,6 +71,12 @@ Branch naming (required):
 - `bugfix/<name>`
 - `infrastructure/<name>`
 
+Epic workflow (required):
+- Before starting the first task in an epic, create and switch to a `feature/<epic-name>` branch.
+- Commit each completed task in that epic separately (one task = one commit).
+- Do not batch multiple epic tasks into one commit unless the user explicitly approves.
+- Never commit directly to `main`. All commits must be made in a non-`main` working branch.
+
 Command execution policy:
 - The agent may propose commands, but must ask for explicit confirmation before running any shell commands (including all git commands).
 

@@ -79,6 +79,12 @@ Rules:
 - Bug fixes: `bugfix/<name>`
 - Infrastructure/process/tooling: `infrastructure/<name>`
 
+Epic workflow (required):
+- Before starting the first task in an epic, create and switch to a `feature/<epic-name>` branch.
+- Commit each completed task in that epic separately (one task = one commit).
+- Do not batch multiple epic tasks into one commit unless the user explicitly approves.
+- Never commit directly to `main`. All commits must be made in a non-`main` working branch.
+
 Naming rules:
 - Use lowercase and hyphens: `feature/tcp-reconnect`, `bugfix/motor-turning`
 - Keep it short and descriptive (2–5 words).
