@@ -82,6 +82,7 @@ Rules:
 Epic workflow (required):
 - Before starting the first task in an epic, create and switch to a `feature/<epic-name>` branch.
 - Commit each completed task in that epic separately (one task = one commit).
+- Every task commit MUST include the related checkbox update in `openspec/changes/<change-id>/tasks.md` in that same commit (`- [ ]` -> `- [x]`).
 - Do not batch multiple epic tasks into one commit unless the user explicitly approves.
 - Never commit directly to `main`. All commits must be made in a non-`main` working branch.
 
