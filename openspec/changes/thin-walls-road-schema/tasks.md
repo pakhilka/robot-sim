@@ -30,3 +30,7 @@
 - [x] 5.2 Confirm attempt startup still fails fast with friendly `invalid_input` reasons for malformed schemas
 - [x] 5.3 Update existing request fixtures to the new road schema in `Builds/requests/request-fail-out-of-bounds.json`, `Builds/requests/request-fail-timeout.json`, `Builds/requests/request-pass-straight.json`, and `Builds/requests/request-pass-with-two-turns.json`
 - [x] 5.4 Validate provided spiral map schema and add new fixture `Builds/requests/request-pass-spiral-room.json`
+
+## 6. Workflow Governance
+
+- [x] 6.1 Update `AGENTS.md` files with strict OpenSpec -> Beads -> Code flow, one-task-at-a-time commit gate, and `bd --no-db` environment note

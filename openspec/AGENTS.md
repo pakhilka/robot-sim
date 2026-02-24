@@ -49,6 +49,12 @@ Keep this managed block so `openspec update` can refresh the instructions.
   - public API changes
 - **No quick-fix mode**: even small changes must have an OpenSpec change.
 - Beads is a **supporting tracker** (planning + execution), not the main communication tool.
+- STRICTLY FORBIDDEN to bypass workflow order: OpenSpec (What) -> Beads (Plan) -> Code (Implementation).
+
+Task execution gate (STRICT):
+- Execute only one task at a time.
+- After task implementation, show the result to the user and wait for user validation before commit.
+- Do not start the next task before the previous task has a commit, except explicit user-approved exceptions.
 
 ### Approval gate (STRICT)
 - **Do NOT proceed to implementation** until the user explicitly says **"Go!"**.
@@ -73,6 +79,10 @@ If automated "to-beads" is unavailable, the agent MUST use manual fallback:
 Rules:
 - Do NOT guess command names.
 - Prefer many small tasks.
+
+Tooling note:
+- `bd` DB mode is currently not working reliably in this repository.
+- Use `bd --no-db ...` for all Beads operations until DB support is restored.
 
 ## Git Branch Naming (required)
 - Features: `feature/<name>`

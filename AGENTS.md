@@ -44,6 +44,12 @@ Secrets:
 ## 3) OpenSpec Process (mandatory for all changes)
 Approval gate:
 - Do NOT proceed to implementation until the user explicitly says "Go!".
+- STRICTLY FORBIDDEN to bypass the flow: OpenSpec (What) -> Beads (Plan) -> Code (Implementation).
+
+Task execution gate (STRICT):
+- Only one task may be executed at a time.
+- After finishing a task, the agent must present the result to the user and wait for user validation before commit.
+- The next task must not start until the previous task is committed, unless the user explicitly grants an exception.
 
 OpenSpec command execution (CLI):
 - OpenSpec is used via CLI in the terminal (not as chat slash-commands).
@@ -58,6 +64,10 @@ Beads generation fallback:
   3) Create many small Beads tasks via `bd create`
   4) Add dependencies via `bd dep add`
   5) Execute via `bd ready`
+
+Beads tool mode (environment note):
+- In this repository, `bd` DB mode is currently unreliable.
+- Use `bd --no-db ...` for issue operations until DB mode is fixed.
 
 ## 4) Quality Gates (current)
 No automated tests yet.
