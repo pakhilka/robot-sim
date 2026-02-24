@@ -1,0 +1,11 @@
+{
+  "name": "invalid-inconsistent-edges",
+  "socketAddress": "127.0.0.1:9999",
+  "levelCompletionLimitSeconds": 30,
+  "startRotationDegrees": 0,
+  "map": [
+    ["S", "─", "F", "#"],
+    ["#", "#", "#", "#"],
+    ["#", "─", "│", "#"]
+  ]
+}

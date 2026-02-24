@@ -1,0 +1,13 @@
+{
+  "name": "pass-smoke-dead-end",
+  "socketAddress": "127.0.0.1:9999",
+  "levelCompletionLimitSeconds": 3000,
+  "startRotationDegrees": 0,
+  "map": [
+    ["#", "#", "#", "#", "#"],
+    ["S", "─", "X", "─", "#"],
+    ["#", "#", "│", "#", "#"],
+    ["#", "#", "└", "─", "F"],
+    ["#", "#", "#", "#", "#"]
+  ]
+}
