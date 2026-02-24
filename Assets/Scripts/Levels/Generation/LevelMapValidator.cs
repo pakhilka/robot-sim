@@ -30,6 +30,7 @@ namespace RobotSim.Levels.Generation
             int rows = map.Length;
             int cols = map[0].Length;
             var cells = new LevelCellType[rows, cols];
+            var definitions = new LevelRoadSymbolDefinition[rows, cols];
 
             int startCount = 0;
             int finishCount = 0;
@@ -54,7 +55,15 @@ namespace RobotSim.Levels.Generation
 
                 for (int col = 0; col < cols; col++)
                 {
-                    LevelCellType cell = MapSymbolToCellType(map[row][col]);
+                    string symbol = map[row][col];
+                    if (!LevelRoadSymbolCatalog.TryGetDefinition(symbol, out LevelRoadSymbolDefinition definition))
+                    {
+                        error = $"Unknown map symbol '{symbol}' at row {row}, col {col}.";
+                        return false;
+                    }
+
+                    definitions[row, col] = definition;
+                    LevelCellType cell = definition.CellType;
                     cells[row, col] = cell;
 
                     if (cell == LevelCellType.Start)
@@ -85,8 +94,20 @@ namespace RobotSim.Levels.Generation
                 return false;
             }
 
+            LevelDirection[,] openings = LevelRoadOpeningsResolver.Resolve(definitions);
+            if (!ValidateStartAndFinishConnectivity(openings, startRow, startCol, finishRow, finishCol, out error))
+            {
+                return false;
+            }
+
+            if (!ValidateMutualEdgeConsistency(cells, openings, out error))
+            {
+                return false;
+            }
+
             result = new LevelMapValidationResult(
                 cells,
+                openings,
                 startRow,
                 startCol,
                 finishRow,
@@ -94,24 +115,94 @@ namespace RobotSim.Levels.Generation
             return true;
         }
 
-        public static LevelCellType MapSymbolToCellType(string symbol)
+        private static bool ValidateStartAndFinishConnectivity(
+            LevelDirection[,] openings,
+            int startRow,
+            int startCol,
+            int finishRow,
+            int finishCol,
+            out string error)
         {
-            if (symbol == "W")
+            error = string.Empty;
+
+            if (openings[startRow, startCol] == LevelDirection.None)
             {
-                return LevelCellType.Wall;
+                error = "Start tile S must connect to at least one traversable neighbor.";
+                return false;
             }
 
-            if (symbol == "S")
+            if (openings[finishRow, finishCol] == LevelDirection.None)
             {
-                return LevelCellType.Start;
+                error = "Finish tile F must connect to at least one traversable neighbor.";
+                return false;
             }
 
-            if (symbol == "F")
+            return true;
+        }
+
+        private static bool ValidateMutualEdgeConsistency(
+            LevelCellType[,] cells,
+            LevelDirection[,] openings,
+            out string error)
+        {
+            error = string.Empty;
+            int rows = cells.GetLength(0);
+            int cols = cells.GetLength(1);
+
+            for (int row = 0; row < rows; row++)
             {
-                return LevelCellType.Finish;
+                for (int col = 0; col < cols; col++)
+                {
+                    if (!IsTraversable(cells[row, col]))
+                    {
+                        continue;
+                    }
+
+                    foreach (LevelDirection direction in LevelDirectionUtility.CardinalDirections)
+                    {
+                        if ((openings[row, col] & direction) == 0)
+                        {
+                            continue;
+                        }
+
+                        if (!LevelDirectionUtility.TryStep(direction, out int rowDelta, out int colDelta))
+                        {
+                            continue;
+                        }
+
+                        int neighborRow = row + rowDelta;
+                        int neighborCol = col + colDelta;
+                        if (neighborRow < 0 || neighborRow >= rows || neighborCol < 0 || neighborCol >= cols)
+                        {
+                            // Открытый выход к краю карты считается валидным тупиком.
+                            continue;
+                        }
+
+                        if (!IsTraversable(cells[neighborRow, neighborCol]))
+                        {
+                            // Открытый выход в пустоту считается валидным тупиком.
+                            continue;
+                        }
+
+                        LevelDirection opposite = LevelDirectionUtility.Opposite(direction);
+                        bool neighborHasOpposite = (openings[neighborRow, neighborCol] & opposite) != 0;
+                        if (!neighborHasOpposite)
+                        {
+                            error = $"Inconsistent connectivity between ({row},{col}) and ({neighborRow},{neighborCol}).";
+                            return false;
+                        }
+                    }
+                }
             }
 
-            return LevelCellType.Empty;
+            return true;
+        }
+
+        private static bool IsTraversable(LevelCellType cellType)
+        {
+            return cellType == LevelCellType.Road ||
+                   cellType == LevelCellType.Start ||
+                   cellType == LevelCellType.Finish;
         }
     }
 }
