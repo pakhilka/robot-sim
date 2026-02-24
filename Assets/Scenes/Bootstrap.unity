@@ -301,9 +301,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d189041edc1441a9880c47f872ad98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wallPrefab: {fileID: 3274919250295178441, guid: 5eb024f64d6644ab2bf80782ad91613b, type: 3}
+  _roadPrefab: {fileID: 8989605769265130207, guid: b78eac3ccf04e4782b6f82b809177b31, type: 3}
   _startPrefab: {fileID: 6638815147282906747, guid: e69809ce8260e4d32a5af8e2133a1f61, type: 3}
   _finishPrefab: {fileID: 8660965361555044717, guid: 28afa54a35b6847208e20270476228ed, type: 3}
+  _boundaryWallPrefab: {fileID: 3274919250295178441, guid: 5eb024f64d6644ab2bf80782ad91613b, type: 3}
   _groundWithBoundsPrefab: {fileID: 5431528826567971657, guid: b6e04caf5d31947ef999f8fc71cfbc5f, type: 3}
 --- !u!114 &1124537562
 MonoBehaviour:
@@ -323,7 +324,7 @@ MonoBehaviour:
   _skipSocketPreCheck: 1
   _autoRunOnStart: 1
   _useEditorRequestFallback: 1
-  _editorRequestPath: /Users/ilyastipakov/Documents/unity_hub/RobotSim/Builds/requests/request-pass-with-two-turns.json
+  _editorRequestPath: /Users/ilyastipakov/Documents/unity_hub/RobotSim/Builds/requests/request-pass-spiral-room.json.json
   _editorDebugOutputPath: 
 --- !u!1 &1964806930
 GameObject:

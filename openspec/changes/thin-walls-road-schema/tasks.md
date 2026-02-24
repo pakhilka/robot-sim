@@ -22,6 +22,7 @@
 - [x] 4.2 Integrate thin edge wall spawn/orientation in Unity adapters without leaking Unity API into core logic
 - [x] 4.3 Move `LevelPrefabSpawner` from `Levels/Components` to `Levels/Adapters` as a non-MonoBehaviour Unity adapter refactor
 - [x] 4.4 Raise thin boundary walls by half wall height so they sit on top of floor instead of being centered through it
+- [x] 4.5 Align scene/prefab assets for thin-wall rendering (`Bootstrap.unity`, `Wall.prefab`, `Road.prefab`)
 
 ## 5. Verification
 
