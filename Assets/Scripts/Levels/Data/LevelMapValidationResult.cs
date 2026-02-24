@@ -7,12 +7,14 @@ namespace RobotSim.Levels.Data
     {
         public LevelMapValidationResult(
             LevelCellType[,] cells,
+            LevelDirection[,] openings,
             int startRow,
             int startCol,
             int finishRow,
             int finishCol)
         {
             Cells = cells;
+            Openings = openings;
             StartRow = startRow;
             StartCol = startCol;
             FinishRow = finishRow;
@@ -20,6 +22,7 @@ namespace RobotSim.Levels.Data
         }
 
         public LevelCellType[,] Cells { get; }
+        public LevelDirection[,] Openings { get; }
         public int StartRow { get; }
         public int StartCol { get; }
         public int FinishRow { get; }

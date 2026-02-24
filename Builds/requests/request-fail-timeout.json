@@ -1,0 +1,13 @@
+{
+  "name": "fail-timeout",
+  "socketAddress": "127.0.0.1:9999",
+  "levelCompletionLimitSeconds": 15,
+  "startRotationDegrees": 0,
+  "map": [
+    ["#", "#", "#", "#", "#"],
+    ["#", "S", "─", "┐", "#"],
+    ["#", "#", "#", "#", "#"],
+    ["#", "F", "─", "┘", "#"],
+    ["#", "#", "#", "#", "#"]
+  ]
+}

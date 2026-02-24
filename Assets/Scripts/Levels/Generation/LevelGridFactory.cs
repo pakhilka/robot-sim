@@ -20,6 +20,7 @@ namespace RobotSim.Levels.Generation
 
             grid = new LevelGrid(
                 validated.Cells,
+                validated.Openings,
                 validated.StartRow,
                 validated.StartCol,
                 validated.FinishRow,

@@ -14,5 +14,10 @@ namespace RobotSim.Levels.Interfaces
         /// Возвращает единый префаб ground+perimeter bounds, если он настроен.
         /// </summary>
         bool TryGetGroundWithBoundsPrefab(out GameObject prefab);
+
+        /// <summary>
+        /// Возвращает префаб тонкой граничной стенки, если настроен.
+        /// </summary>
+        bool TryGetBoundaryWallPrefab(out GameObject prefab);
     }
 }
